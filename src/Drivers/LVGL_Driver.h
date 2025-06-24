@@ -5,6 +5,9 @@
 #include <demos/lv_demos.h>
 #include <esp_heap_caps.h>
 #include "Display_ST7789.h"
+#if defined(BOARD_TYPE_WAVESHARE_ESP32_S3_1_47B)
+    #include "Simulated_Gesture.h"
+#endif
 
 #define LVGL_WIDTH    LCD_WIDTH 
 #define LVGL_HEIGHT   LCD_HEIGHT

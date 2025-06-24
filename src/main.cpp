@@ -36,18 +36,32 @@
 #include "Drivers/SD_Card.h"
 #include "Drivers/Display_ST7789.h"
 #include "Drivers/LVGL_Driver.h"
-#include "Drivers/LVGL_Example.h"
 #include "Drivers/Wireless.h"
 #include "Drivers/RGB_lamp.h"
+#include "LVGL_Example.h"
+
+#if defined(BOARD_TYPE_WAVESHARE_ESP32_S3_1_47B)
+  #include "Drivers/I2C_Driver.h"
+  #include "Drivers/Gyro_QMI8658.h"
+  #include "Drivers/Button_Driver.h"
+  #include "Drivers/BAT_Driver.h"
+#endif
 
 void setup()
 {
   Flash_test();
+#if defined(BOARD_TYPE_WAVESHARE_ESP32_S3_1_47B)
+  BAT_Init();
+  Button_Init();
+  I2C_Init();
+  QMI8658_Init(); 
+#endif
+
   SD_Init();         
   LCD_Init();
   Set_Backlight(90);
+  RGB_Loop(5);
   Lvgl_Init();
-
   Lvgl_Example1();     
   // lv_demo_widgets();               
   // lv_demo_benchmark();          
@@ -55,11 +69,14 @@ void setup()
   // lv_demo_music();  
   // lv_demo_stress();        
   Wireless_Test2();  
+
+#if defined(BOARD_TYPE_WAVESHARE_ESP32_S3_1_47B)
+  Simulated_Touch_Init();  
+#endif
 }
 
 void loop()
 {
   Timer_Loop();
-  RGB_Lamp_Loop(2);
   delay(5);
 }

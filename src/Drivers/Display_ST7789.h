@@ -11,9 +11,16 @@
 #define EXAMPLE_PIN_NUM_LCD_CS         42
 #define EXAMPLE_PIN_NUM_LCD_DC         41
 #define EXAMPLE_PIN_NUM_LCD_RST        39
-#define EXAMPLE_PIN_NUM_BK_LIGHT       48
+#if defined(BOARD_TYPE_WAVESHARE_ESP32_S3_1_47)
+    #define EXAMPLE_PIN_NUM_BK_LIGHT       48
+#endif
+#if defined(BOARD_TYPE_WAVESHARE_ESP32_S3_1_47B)
+    #define EXAMPLE_PIN_NUM_BK_LIGHT       46
+#endif
+
 #define Frequency       1000                    // PWM frequencyconst 
-#define Resolution      10                      
+#define Resolution      10                         
+#define Backlight_MAX   100     
 
 #define VERTICAL   0
 #define HORIZONTAL 1
@@ -21,6 +28,7 @@
 #define Offset_X 34
 #define Offset_Y 0
 
+extern uint8_t LCD_Backlight;
 
 void LCD_SetCursor(uint16_t x1, uint16_t y1, uint16_t x2,uint16_t y2);
 

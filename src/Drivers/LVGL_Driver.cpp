@@ -33,7 +33,19 @@ void Lvgl_Display_LCD( lv_disp_drv_t *disp_drv, const lv_area_t *area, lv_color_
 /*Read the touchpad*/
 void Lvgl_Touchpad_Read( lv_indev_drv_t * indev_drv, lv_indev_data_t * data )
 {
-  // NULL
+#if defined(BOARD_TYPE_WAVESHARE_ESP32_S3_1_47B)
+  if (Simulated_touch_data.points != 0x00) {
+    data->point.x = Simulated_touch_data.x;
+    data->point.y = Simulated_touch_data.y;
+    data->state = LV_INDEV_STATE_PR;
+    // printf("LVGL : X=%u Y=%u points=%d\r\n",  Simulated_touch_data.x , Simulated_touch_data.y,Simulated_touch_data.points);
+  } else {
+    data->state = LV_INDEV_STATE_REL;
+  }
+  Simulated_touch_data.x = 0;
+  Simulated_touch_data.y = 0;
+  Simulated_touch_data.points = 0;
+#endif
 }
 void example_increase_lvgl_tick(void *arg)
 {

@@ -35,14 +35,35 @@ void Set_Color(uint8_t Red,uint8_t Green,uint8_t Blue)                          
 {
   neopixelWrite(PIN_NEOPIXEL, Red, Green, Blue);  
 }
-void RGB_Lamp_Loop(uint16_t Waiting)
-{ 
-  Time++;
-  if(Time == Waiting){
-    Time = 0;
-    Number++;
-    if(Number == 192)
-      Number = 0;
-    Set_Color( RGB_Data[Number][0]*3, RGB_Data[Number][1]*3, RGB_Data[Number][2]*3);  // Color
+
+// RGB_Lamp_Loop function with correct parameter type
+void RGB_Lamp_Loop(void* pvParameters)
+{   
+  uint16_t Waiting = (uint16_t)(uintptr_t)(pvParameters);  // Cast the parameter back to uint16_t
+  while(1)
+  {
+    Time++;                                                                             // Assuming 'Time' is a global or static variable
+    if(Time == Waiting){
+      Time = 0;
+      Number++;                                                                         // 'Number' is another global or static variable
+      if(Number == 192)                                                                 // Reset Number if it reaches 192
+        Number = 0;
+      Set_Color( RGB_Data[Number][0]*3, RGB_Data[Number][1]*3, RGB_Data[Number][2]*3);  // Set RGB color
+    }
+    vTaskDelay(pdMS_TO_TICKS(5));  // Task delay to avoid high CPU usage (delay 5ms)
   }
+}
+
+// RGB_Loop function with correct task creation
+void RGB_Loop(uint16_t Waiting)
+{ 
+  xTaskCreatePinnedToCore(
+    RGB_Lamp_Loop,             // Task function
+    "RGB Driver task",       // Task name
+    2048,                      // Stack size
+    (void*)Waiting,            // Passing 'Waiting' as a void* pointer
+    3,                         // Task priority
+    NULL,                      // No task handle
+    0                           // Pin to core 0
+  );
 }

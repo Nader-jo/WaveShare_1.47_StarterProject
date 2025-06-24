@@ -212,21 +212,25 @@ void LCD_addWindow(uint16_t Xstart, uint16_t Ystart, uint16_t Xend, uint16_t Yen
   LCD_WriteData_nbyte((uint8_t*)color, Read_D, numBytes);        
 }
 // backlight
+uint8_t LCD_Backlight = 90;
 void Backlight_Init(void)
 {
   ledcSetup(0, Frequency, Resolution);
   ledcAttachPin(EXAMPLE_PIN_NUM_BK_LIGHT, 0);   
   //ledcAttach(EXAMPLE_PIN_NUM_BK_LIGHT, Frequency, Resolution);    
-  ledcWrite(EXAMPLE_PIN_NUM_BK_LIGHT, 100);                      
+  ledcWrite(EXAMPLE_PIN_NUM_BK_LIGHT, 100);           
+  Set_Backlight(LCD_Backlight);      //0~100               
 }
 
 void Set_Backlight(uint8_t Light)                        //
 {
 
-  if(Light > 100 || Light < 0)
+  if(Light > Backlight_MAX)
     printf("Set Backlight parameters in the range of 0 to 100 \r\n");
   else{
     uint32_t Backlight = Light*10;
+    if(Backlight == 1000)
+      Backlight = 1024;
     ledcWrite(EXAMPLE_PIN_NUM_BK_LIGHT, Backlight);
   }
 }
