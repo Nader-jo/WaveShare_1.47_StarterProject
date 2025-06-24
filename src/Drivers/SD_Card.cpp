@@ -6,21 +6,34 @@ bool SDCard_Finish;
 uint16_t SDCard_Size;
 uint16_t Flash_Size;
 
-void SD_Init() {
+bool SD_Init() {
+  #if defined(BOARD_TYPE_WAVESHARE_ESP32_S3_1_47) or defined(BOARD_TYPE_WAVESHARE_ESP32_S3_1_47B)
   // SD MMC
   if(!SD_MMC.setPins(SD_CLK_PIN, SD_CMD_PIN, SD_D0_PIN, SD_D1_PIN, SD_D2_PIN, SD_D3_PIN)){
     printf("SD MMC: Pin change failed!\r\n");
     return;
   }
   if (SD_MMC.begin("/sdcard", true, true)) {                              
+#endif
+#if defined(BOARD_TYPE_WAVESHARE_ESP32_C6_1_47)
+  // SD
+  pinMode(SD_CS, OUTPUT);    
+  digitalWrite(SD_CS, HIGH);               
+  if (SD.begin(SD_CS, SPI)) {
+#endif
     printf("SD card initialization successful!\r\n");
   } else {
     printf("SD card initialization failed!\r\n");
   }
-  uint8_t cardType = SD_MMC.cardType();
+  #if defined(BOARD_TYPE_WAVESHARE_ESP32_C6_1_47)
+    uint8_t cardType = SD.cardType();
+  #endif
+  #if defined(BOARD_TYPE_WAVESHARE_ESP32_S3_1_47) or defined(BOARD_TYPE_WAVESHARE_ESP32_S3_1_47B)
+    uint8_t cardType = SD_MMC.cardType();
+  #endif
   if(cardType == CARD_NONE){
     printf("No SD card attached\r\n");
-    return;
+    return false;
   }
   else{
     printf("SD Card Type: ");
@@ -33,17 +46,29 @@ void SD_Init() {
     } else {
       printf("UNKNOWN\r\n");
     }
+    #if defined(BOARD_TYPE_WAVESHARE_ESP32_C6_1_47)
+    uint64_t totalBytes = SD.totalBytes();
+    uint64_t usedBytes = SD.usedBytes();
+    #endif
+    #if defined(BOARD_TYPE_WAVESHARE_ESP32_S3_1_47) or defined(BOARD_TYPE_WAVESHARE_ESP32_S3_1_47B)
     uint64_t totalBytes = SD_MMC.totalBytes();
     uint64_t usedBytes = SD_MMC.usedBytes();
+    #endif
     SDCard_Size = totalBytes/(1024*1024);
     printf("Total space: %llu\n", totalBytes);
     printf("Used space: %llu\n", usedBytes);
     printf("Free space: %llu\n", totalBytes - usedBytes);
   }
+  return true;
 }
 bool File_Search(const char* directory, const char* fileName)    
 {
-  File Path = SD_MMC.open(directory);
+#if defined(BOARD_TYPE_WAVESHARE_ESP32_C6_1_47)
+  File Path = SD.open(directory);
+#endif
+#if defined(BOARD_TYPE_WAVESHARE_ESP32_S3_1_47) or defined(BOARD_TYPE_WAVESHARE_ESP32_S3_1_47B)
+  File Path = SD_MMC.open(directory); 
+#endif
   if (!Path) {
     printf("Path: <%s> does not exist\r\n",directory);
     return false;
@@ -69,7 +94,12 @@ bool File_Search(const char* directory, const char* fileName)
 }
 uint16_t Folder_retrieval(const char* directory, const char* fileExtension, char File_Name[][100],uint16_t maxFiles)    
 {
+  #if defined(BOARD_TYPE_WAVESHARE_ESP32_C6_1_47)
+  File Path = SD.open(directory);
+  #endif
+  #if defined(BOARD_TYPE_WAVESHARE_ESP32_S3_1_47) or defined(BOARD_TYPE_WAVESHARE_ESP32_S3_1_47B)
   File Path = SD_MMC.open(directory);
+  #endif
   if (!Path) {
     printf("Path: <%s> does not exist\r\n",directory);
     return false;
@@ -93,7 +123,7 @@ uint16_t Folder_retrieval(const char* directory, const char* fileExtension, char
   }
   Path.close();                                                         
   if (fileCount > 0) {
-    printf("%d <%s> files were retrieved\r\n",fileCount,fileExtension);
+    printf(" %d <%s> files were retrieved\r\n",fileCount,fileExtension);
     return fileCount;                                                 
   } else {
     printf("No files with extension '%s' found in directory: %s\r\n", fileExtension, directory);
@@ -107,6 +137,7 @@ void remove_file_extension(char *file_name) {
     *last_dot = '\0'; 
   }
 }
+
 void Flash_test()
 {
   printf("/********** RAM Test**********/\r\n");

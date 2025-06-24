@@ -5,12 +5,23 @@
 #define LCD_HEIGHT  320 //LCD height
 
 #define SPIFreq                        80000000
-#define EXAMPLE_PIN_NUM_MISO           -1
-#define EXAMPLE_PIN_NUM_MOSI           45
-#define EXAMPLE_PIN_NUM_SCLK           40
-#define EXAMPLE_PIN_NUM_LCD_CS         42
-#define EXAMPLE_PIN_NUM_LCD_DC         41
-#define EXAMPLE_PIN_NUM_LCD_RST        39
+#if defined(BOARD_TYPE_WAVESHARE_ESP32_C6_1_47)
+    #define EXAMPLE_PIN_NUM_MISO           5
+    #define EXAMPLE_PIN_NUM_MOSI           6
+    #define EXAMPLE_PIN_NUM_SCLK           7
+    #define EXAMPLE_PIN_NUM_LCD_CS         14
+    #define EXAMPLE_PIN_NUM_LCD_DC         15
+    #define EXAMPLE_PIN_NUM_LCD_RST        21
+    #define EXAMPLE_PIN_NUM_BK_LIGHT       22
+#endif
+#if defined(BOARD_TYPE_WAVESHARE_ESP32_S3_1_47) or defined(BOARD_TYPE_WAVESHARE_ESP32_S3_1_47B)
+    #define EXAMPLE_PIN_NUM_MISO           -1
+    #define EXAMPLE_PIN_NUM_MOSI           45
+    #define EXAMPLE_PIN_NUM_SCLK           40
+    #define EXAMPLE_PIN_NUM_LCD_CS         42
+    #define EXAMPLE_PIN_NUM_LCD_DC         41
+    #define EXAMPLE_PIN_NUM_LCD_RST        39
+#endif
 #if defined(BOARD_TYPE_WAVESHARE_ESP32_S3_1_47)
     #define EXAMPLE_PIN_NUM_BK_LIGHT       48
 #endif
