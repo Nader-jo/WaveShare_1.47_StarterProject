@@ -11,7 +11,7 @@ bool SD_Init() {
   // SD MMC
   if(!SD_MMC.setPins(SD_CLK_PIN, SD_CMD_PIN, SD_D0_PIN, SD_D1_PIN, SD_D2_PIN, SD_D3_PIN)){
     printf("SD MMC: Pin change failed!\r\n");
-    return;
+    return false;
   }
   if (SD_MMC.begin("/sdcard", true, true)) {                              
 #endif
